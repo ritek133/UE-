@@ -1,6 +1,6 @@
 ﻿# 作者：Huang TaiCheng
 # 概要：
-# 失敗監査ログ抽出
+# WindowsServer AD DC失敗監査ログ抽出
 
 $myname = [System.IO.Path]::GetFileNameWithoutExtension($MyInvocation.MyCommand.Name)
 $yyyymmdd = get-date -UFormat %Y%m%d
