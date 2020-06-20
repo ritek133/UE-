@@ -42,18 +42,56 @@ write-output $name2 >>.\date\filenamaelist.txt
 $i++
 }
 
-
 #解凍処理
 $list_file=".\date\filenamaelist.txt"
-$arr = (Get-Content $list_file | Select-Object -Skip 3) -as [string[]]
+$pw_file=".\date\pw_file.txt"
+$cn=1
+$ps=(Get-Content $pw_file | Select-Object -Skip $cn) -as [string[]]
+$arr = (Get-Content $list_file) -as [string[]]
 $i=1
 foreach ($name in $arr) {
 
 # 実行コマンド
-Start-Process $7zip -ArgumentList  "x -y  -pXXXXXXXXXX $name -o$dist" -Wait
+Write-host　"解凍処理"$name
+$proc = (Start-Process $7zip -ArgumentList  "x -y  -p$ps $name -o$dist" -PassThru -Wait)
+$ss=$proc.ExitCode
+Write-Host $ss
+
+#成功判断
+switch($ss){
+0{$name+"-成功-"}
+2{
+
+#リトライ処理
+
+Write-Output $name >>".\date\errlist.txt"
+write-host "失敗した。リトライ開始"
+foreach ($rearr in $ps) {
+$i=1
+# 実行コマンド
+$reproc = (Start-Process $7zip -ArgumentList  "x -y  -p$rearr $name -o$dist" -PassThru -Wait)
+$ress=$reproc.ExitCode
+Write-host "リトライ対象"$name
+Write-Host $ress
+Write-Host "リトライPW"$rearr
+
+#リトライ成功判断、成功したらループ解除
+if ( $ress -eq 0 )
+{
+Write-Host "リトライ成功、ループ解除"
+break
+}
+
 
 $i++
 }
+}
+
+}
+
+$i++
+}
+
 
 #後処理
 #対象ファイルリストをネーミング処理
