@@ -121,3 +121,5 @@ $hostname=id-converter $node
 
 	$i++
 }
+
+pause
